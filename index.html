@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discipleship Admin Dashboard</title>
+<style>
+:root{
+  --primary:#2b6cb0; --primary-dark:#225a90;
+  --ok:#c6f6d5; --bad:#fed7d7;
+  --bg:#f5f7fa; --text:#222;
+}
+body{font-family:Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);transition:0.3s;}
+button{cursor:pointer;transition:0.3s;}
+
+/* Welcome Page */
+.welcome-wrap{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(270deg,#ff9a9e,#fad0c4,#fbc2eb,#a6c1ee);
+  background-size:800% 800%; animation:gradientBG 15s ease infinite;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.welcome-card{
+  max-width:700px;background:#fff;padding:28px;border-radius:16px;
+  text-align:center;box-shadow:0 12px 30px rgba(0,0,0,0.12);
+}
+.logo{max-width:140px;margin-bottom:14px;}
+.teacher-img{max-width:220px;border-radius:12px;display:block;margin:14px auto;}
+.btn{display:inline-block;background:var(--primary);color:#fff;border:none;border-radius:8px;padding:0 16px;height:40px;line-height:40px;font-size:15px;}
+.btn:hover{background:var(--primary-dark);}
+
+/* Welcome Text Animation */
+.welcome-title{font-size:22px;font-weight:700;color:#2b3a55;margin-bottom:8px;opacity:0;animation:fadeUp 1.2s ease forwards;}
+.welcome-sub{font-size:14px;color:#444;margin-bottom:10px;line-height:1.5;opacity:0;animation:fadeUp 1.2s ease forwards;animation-delay:0.3s;}
+.welcome-verse{font-size:13px;font-style:italic;color:#333;opacity:0;animation:fadeUp 1.2s ease forwards;animation-delay:0.6s;}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(12px);}100%{opacity:1;transform:translateY(0);}}
+
+/* Dashboard */
+.container{max-width:1200px;margin:20px auto;background:#fff;padding:18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+input,select,textarea,button{font-family:inherit}
+input,select,textarea{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;}
+button{height:40px}
+.tab-buttons{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.tab-buttons button{flex:1;background:#eef5fb;border-radius:6px}
+.tab-buttons button.active{background:var(--primary);color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.number-input{display:flex;gap:8px;align-items:center}
+.number-input button{width:44px;padding:0}
+.lessons-row{display:flex;flex-wrap:wrap;gap:10px}
+.lessons-row > div{flex:1 1 160px}
+.table-container{overflow:auto;margin-top:14px;max-height:500px;position:relative;}
+table{width:100%;border-collapse:collapse;table-layout:auto;margin-bottom:20px;min-width:800px;}
+th,td{padding:8px;border:1px solid #e6eef6;text-align:left;white-space:nowrap;word-break:normal;}
+th{background:var(--primary);color:#fff;position:sticky;top:0;z-index:1;user-select:none;}
+td.yes{background:var(--ok);color:#22543d;text-align:center;font-weight:600;}
+td.no{background:var(--bad);color:#822727;text-align:center;font-weight:600;}
+.selected-row{outline:2px solid #f39c12;transition:0.3s;}
+.highlight{animation:highlightAnim 1s ease;}
+@keyframes highlightAnim{0%{background:#ffff88}50%{background:inherit}100%{background:#ffff88}}
+.admin-list{margin-top:12px;border:1px solid #eee;padding:10px;border-radius:6px}
+.admin-list div{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.search-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.search-row input{flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;}
+.pagination{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.small-muted{font-size:13px;color:#666}
+.eye-icon{position:absolute;right:14px;top:35px;cursor:pointer;user-select:none;}
+.position-relative{position:relative}
+
+/* Dark theme */
+body.dark{background:#121212;color:#f0f0f0}
+body.dark .container{background:#1e1e1e}
+body.dark input,body.dark select,body.dark textarea{background:#2c2c2c;color:#f0f0f0;border:1px solid #555;}
+body.dark table th{background:#333}
+body.dark table td.yes{background:#4caf50;color:#fff}
+body.dark table td.no{background:#f44336;color:#fff}
+body.dark .btn{background:#1976d2;color:#fff}
+body.dark .btn:hover{background:#0d47a1}
+
+/* Responsive */
+@media(max-width:720px){.lessons-row>div{flex:1 1 100%}}
+</style>
+</head>
+<body>
+
+<!-- Welcome -->
+<div id="welcomeView" class="welcome-wrap">
+  <div class="welcome-card">
+    <img src="logo.png" class="logo" alt="Logo">
+    <h2 class="welcome-title">Welcome to Your Spiritual Home</h2>
+    <p class="welcome-sub">
+      Grow in faith, walk with purpose, and discover God’s calling for your life.
+      This platform helps you build disciples, track growth, and strengthen your ministry.
+    </p>
+    <p class="welcome-verse">
+      “Your word is a lamp to my feet and a light to my path.” – Psalm 119:105
+    </p>
+    <img src="teacher.jfif" class="teacher-img" alt="Teacher">
+    <button class="btn" id="proceedBtn">Proceed to Admin Login</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboardView" class="container" style="display:none">
+<h2>Discipleship Admin Dashboard</h2>
+<button class="btn" onclick="toggleTheme()">Dark/Light</button>
+
+<!-- Login -->
+<div id="loginSection">
+  <label>Username</label>
+  <input id="adminUser" type="text">
+  <div class="position-relative">
+    <label>Password</label>
+    <input id="adminPass" type="password">
+    <span class="eye-icon" onclick="togglePassword('adminPass')">👁️</span>
+  </div>
+  <button onclick="adminLogin()" class="btn">Login</button>
+</div>
+
+<div id="adminSection" style="display:none">
+
+<div class="search-row">
+  <input id="globalSearchInput" placeholder="Search by name or phone..." oninput="instantSearch()">
+  <button onclick="instantSearch()">Search</button>
+</div>
+
+<div class="tab-buttons">
+  <button id="tabFormBtn" class="active" onclick="showTab('formTab')">Attendance Form</button>
+  <button id="tabRecordsBtn" onclick="showTab('recordsTab')">Student Records</button>
+  <button id="tabAdminsBtn" onclick="showTab('adminsTab')">Admin Accounts</button>
+</div>
+
+<!-- Attendance Form -->
+<div id="formTab" class="tab-content active">
+  <h3>Add / Update Attendance</h3>
+  <label>Student Name</label>
+  <input id="studentName" type="text">
+  <label>Phone</label>
+  <div style="display:flex;gap:8px">
+    <select id="countryCode" style="width:120px">
+      <option value="+254">Kenya +254</option>
+      <option value="+1">USA +1</option>
+      <option value="+44">UK +44</option>
+      <option value="+91">India +91</option>
+      <option value="+234">Nigeria +234</option>
+    </select>
+    <input id="studentPhone" placeholder="Phone number">
+  </div>
+  <label>Class No.</label>
+  <div class="number-input">
+    <button onclick="changeClass(-1)">-</button>
+    <input id="studentClass" type="number" min="1" max="12" value="1">
+    <button onclick="changeClass(1)">+</button>
+  </div>
+  <h4>Lessons</h4>
+  <div class="lessons-row" id="lessonsContainer"></div>
+  <div style="display:flex;gap:12px;margin-top:12px">
+    <button onclick="submitAttendance()" class="btn">Submit</button>
+    <button onclick="clearForm()" style="background:#eee;color:#222;border-radius:6px;height:40px">Clear</button>
+    <button onclick="deleteRecord()" style="background:#f44336;color:#fff;border-radius:6px;height:40px">Delete</button>
+  </div>
+</div>
+
+<!-- Student Records -->
+<div id="recordsTab" class="tab-content">
+  <h3>Student Records</h3>
+  <div id="recordsContainer" class="table-container"></div>
+  <div class="pagination" id="paginationControls"></div>
+</div>
+
+<!-- Admin Accounts -->
+<div id="adminsTab" class="tab-content">
+  <h3>Admin Accounts</h3>
+  <label>New Username</label>
+  <input id="newAdminUser">
+  <label>New Password</label>
+  <div class="position-relative">
+    <input id="newAdminPass" type="password">
+    <span class="eye-icon" onclick="togglePassword('newAdminPass')">👁️</span>
+  </div>
+  <button onclick="addAdmin()" class="btn">Add Admin</button>
+  <div class="admin-list" id="adminList"></div>
+</div>
+</div>
+
+<script>
+// Config
+const lessons=["Salvation","Temptation","Prayers","Bible","Fellowhip","Witnessing","Baptism","HolySpirit","Giving","Deliverance","Evangelism"];
+let adminAccounts=[{username:"admin",password:"254@Discipleship",blocked:false}];
+let allRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
+let filteredRecords=[],currentPage=1,rowsPerPage=20,selectedRecord=null;
+let nextId = allRecords.length ? Math.max(...allRecords.map(r=>r.id))+1 : 1;
+
+// Populate lessons
+lessons.forEach(l=>{
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<label style="font-weight:600">${l}:</label>
+  <select data-lesson="${l}">
+    <option value="no">No</option>
+    <option value="yes">Yes</option>
+  </select>`;
+  document.getElementById('lessonsContainer').appendChild(wrap);
+});
+
+// Helpers
+function togglePassword(id){const i=document.getElementById(id);i.type=(i.type==='password')?'text':'password';}
+function toggleTheme(){document.body.classList.toggle('dark');}
+function changeClass(delta){
+  const input=document.getElementById('studentClass');
+  let v=parseInt(input.value||'1',10);v+=delta;if(v<1)v=1;if(v>12)v=12;input.value=v;
+}
+function showTab(id){
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab-buttons button').forEach(b=>b.classList.remove('active'));
+  if(id==='formTab')document.getElementById('tabFormBtn').classList.add('active');
+  else if(id==='recordsTab')document.getElementById('tabRecordsBtn').classList.add('active');
+  else if(id==='adminsTab')document.getElementById('tabAdminsBtn').classList.add('active');
+}
+
+// Admin login
+document.getElementById('proceedBtn').addEventListener('click',()=>{
+  document.getElementById('welcomeView').style.display='none';
+  document.getElementById('dashboardView').style.display='block';
+  document.getElementById('loginSection').style.display='block';
+});
+function adminLogin(){
+  const u=document.getElementById('adminUser').value.trim();
+  const p=document.getElementById('adminPass').value;
+  const admin=adminAccounts.find(a=>a.username===u && a.password===p);
+  if(!admin){alert('Wrong credentials');return;}
+  if(admin.blocked){alert('Blocked');return;}
+  document.getElementById('loginSection').style.display='none';
+  document.getElementById('adminSection').style.display='block';
+  renderTable();
+}
+
+// Form actions
+function submitAttendance(){
+  const student=document.getElementById('studentName').value.trim();
+  const phone=document.getElementById('studentPhone').value.trim();
+  const countryCode=document.getElementById('countryCode').value;
+  const studentClass=document.getElementById('studentClass').value;
+  if(!student||!phone){alert('Enter student name and phone');return;}
+  const lessonData={};
+  lessons.forEach(l=>{lessonData[l]=document.querySelector(`select[data-lesson="${l}"]`).value;});
+
+  if(!selectedRecord){
+    const newData={id:nextId++,Student:student,Phone:countryCode+phone,"Class No.":studentClass,...lessonData};
+    allRecords.push(newData);
+    alert('Successfully submitted!');
+  }else{
+    selectedRecord.Student=student;
+    selectedRecord.Phone=countryCode+phone;
+    selectedRecord["Class No."]=studentClass;
+    lessons.forEach(l=>selectedRecord[l]=lessonData[l]);
+    alert('Record updated successfully!');
+  }
+  localStorage.setItem('attendanceRecords', JSON.stringify(allRecords));
+  clearForm(); renderTable();
+}
+
+function deleteRecord(){
+  if(!selectedRecord){alert('Select a record first'); return;}
+  if(confirm('Are you sure you want to delete this record?')){
+    allRecords=allRecords.filter(r=>r.id!==selectedRecord.id);
+    selectedRecord=null;
+    localStorage.setItem('attendanceRecords', JSON.stringify(allRecords));
+    alert('Successfully deleted!');
+    renderTable();
+  }
+}
+
+// Clear form also resets editing mode
+function clearForm(){
+  selectedRecord=null;
+  document.getElementById('studentName').value='';
+  document.getElementById('studentPhone').value='';
+  document.getElementById('studentClass').value='1';
+  lessons.forEach(l=>{document.querySelector(`select[data-lesson="${l}"]`).value='no';});
+
+  // Remove editing mode text
+  const editText=document.getElementById('editingText');
+  if(editText) editText.remove();
+
+  // Reset submit button
+  const submitBtn=document.querySelector('#formTab button.btn');
+  submitBtn.textContent='Submit';
+
+  // Remove row highlight
+  document.querySelectorAll('#recordsContainer tr').forEach(tr=>tr.classList.remove('selected-row'));
+}
+
+// Render Table
+function renderTable(){
+  const container=document.getElementById('recordsContainer'); 
+  container.innerHTML='';
+  filteredRecords=allRecords.slice();
+  const totalPages=Math.ceil(filteredRecords.length/rowsPerPage);
+  if(currentPage>totalPages) currentPage=totalPages||1;
+  const start=(currentPage-1)*rowsPerPage;
+  const pageRecords=filteredRecords.slice(start,start+rowsPerPage);
+
+  for(let i=0;i<pageRecords.length;i+=20){
+    const block=pageRecords.slice(i,i+20);
+    const table=document.createElement('table');
+    const thead=document.createElement('thead');
+    const headerRow=document.createElement('tr');
+    const keys=['id','Student','Phone','Class No.',...lessons];
+    keys.forEach(k=>{const th=document.createElement('th'); th.textContent=k; headerRow.appendChild(th);});
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody=document.createElement('tbody');
+    block.forEach(r=>{
+      const tr=document.createElement('tr');
+      keys.forEach(k=>{
+        const td=document.createElement('td'); td.textContent=r[k]||'';
+        if(lessons.includes(k)) td.className=(r[k]==='yes')?'yes':'no';
+        tr.appendChild(td);
+      });
+      tr.addEventListener('click',()=>{fillForm(r);});
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+  renderPagination(totalPages);
+}
+
+// Fill form for editing with highlight & editing mode
+function fillForm(record){
+  selectedRecord=record;
+
+  // Switch to Attendance Form
+  showTab('formTab');
+
+  // Highlight row
+  document.querySelectorAll('#recordsContainer tr').forEach(tr=>tr.classList.remove('selected-row'));
+  const allRows=Array.from(document.querySelectorAll('#recordsContainer tr'));
+  allRows.forEach(tr=>{
+    if(tr.children[1] && tr.children[1].textContent===record.Student){
+      tr.classList.add('selected-row');
+    }
+  });
+
+  // Show Editing Mode
+  const formTab=document.getElementById('formTab');
+  if(!document.getElementById('editingText')){
+    const editText=document.createElement('p');
+    editText.id='editingText';
+    editText.style.color='#d9534f';
+    editText.style.fontWeight='600';
+    editText.textContent='Editing Mode: Update the record below';
+    formTab.insertBefore(editText, formTab.firstChild);
+  } else {
+    document.getElementById('editingText').textContent='Editing Mode: Update the record below';
+  }
+
+  // Change Submit button
+  formTab.querySelector('button.btn').textContent='Update Record';
+
+  // Fill fields
+  document.getElementById('studentName').value=record.Student;
+  const code=record.Phone.match(/^\+\d+/);
+  if(code){
+    document.getElementById('countryCode').value=code[0];
+    document.getElementById('studentPhone').value=record.Phone.replace(code[0],'');
+  } else { document.getElementById('studentPhone').value=record.Phone; }
+  document.getElementById('studentClass').value=record["Class No."];
+  lessons.forEach(l=>{document.querySelector(`select[data-lesson="${l}"]`).value=record[l];});
+}
+
+// Pagination
+function renderPagination(totalPages){
+  const container=document.getElementById('paginationControls');
+  container.innerHTML='';
+  if(currentPage>1){
+    const prev=document.createElement('button'); prev.textContent='Prev';
+    prev.onclick=()=>{currentPage--;renderTable();}
+    container.appendChild(prev);
+  }
+  if(currentPage<totalPages){
+    const next=document.createElement('button'); next.textContent='Next';
+    next.onclick=()=>{currentPage++;renderTable();}
+    container.appendChild(next);
+  }
+}
+
+// Instant search
+function instantSearch(){
+  const val=document.getElementById('globalSearchInput').value.toLowerCase();
+  filteredRecords=allRecords.filter(r=>(r.Student.toLowerCase().includes(val)||r.Phone.toLowerCase().includes(val)));
+  currentPage=1; renderTable();
+}
+
+// Admin management
+function addAdmin(){
+  const u=document.getElementById('newAdminUser').value.trim();
+  const p=document.getElementById('newAdminPass').value;
+  if(!u||!p){alert('Enter username and password');return;}
+  adminAccounts.push({username:u,password:p,blocked:false});
+  renderAdminList();
+  document.getElementById('newAdminUser').value='';
+  document.getElementById('newAdminPass').value='';
+  alert('New admin added successfully!');
+}
+function renderAdminList(){
+  const container=document.getElementById('adminList'); container.innerHTML='';
+  adminAccounts.forEach((a,i)=>{
+    const div=document.createElement('div'); div.innerHTML=`<span>${a.username}</span>`;
+    const btn=document.createElement('button'); btn.textContent=a.blocked?'Unblock':'Block';
+    btn.onclick=()=>{a.blocked=!a.blocked; renderAdminList();}
+    div.appendChild(btn); container.appendChild(div);
+  });
+}
+renderAdminList();
+</script>
+</body>
+</html>
